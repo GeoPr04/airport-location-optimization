@@ -1,3 +1,5 @@
 from functions.read_data import read_data
 
-read_data("C")
+data = read_data("C")
+
+print(data)
