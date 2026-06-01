@@ -1,4 +1,5 @@
-from optimizers.pso import pso_airport_optimization
+from optimizers.genetic import genetic_algorthm
+from functions.make_cities import make_cities
 import matplotlib.pyplot as plt
 import random
 import numpy as np
@@ -10,100 +11,71 @@ n_airports = 6 # random.randint(1, 8)
 population_min = 40000
 population_max = 140000
 
-def make_cities(n_cities = 10, boundries = [400, 400]):
-
-    cities = []
-    for _ in range(n_cities):
-
-        x = random.randint(0, boundries[0])
-        y = random.randint(0, boundries[1])
-        population = random.randint(population_min, population_max)
-        cities.append((x, y, population))
-
-    return cities
-
 
 cities = make_cities(n_cities, boundries)
-print(cities)
-best_airports, best_cost, assignments = pso_airport_optimization(cities=cities, n_airports=n_airports)
+best_solution , error_cost = genetic_algorthm(cities,
+                                              n_airports=n_airports,
+                                              boundries=boundries,
+                                              n_children = 800,
+                                              iterations = 20,
+                                              mutation_rate = 0.3,
+                                              mutation_strength_perc = 0.2)
 
 
 
 # visualization
 
-cities_np = np.array(cities)
+print("best cost:", error_cost[-1])
+plt.plot(error_cost)
 
-city_x = cities_np[:, 0]
-city_y = cities_np[:, 1]
-city_pop = cities_np[:, 2]
+new_data = [t[:-1] for t in cities]
+cities = np.array(new_data)
+airports = np.array(best_solution[0])
 
-plt.figure(figsize=(10, 8))
+# print(cities)
+# print(airports)
 
-# Χρωματίζουμε κάθε πόλη ανάλογα με το αεροδρόμιο που εξυπηρετείται
-colors = plt.cm.tab10(assignments)
+# ======================
+# PLOT
+# ======================
 
-# Πόλεις
+plt.figure(figsize=(8, 6))
+
+# πόλεις
 plt.scatter(
-    city_x,
-    city_y,
-    s=city_pop / 1000,  # μέγεθος ανάλογο πληθυσμού
-    c=colors,
-    alpha=0.7,
-    label="Cities"
+    cities[:, 0],
+    cities[:, 1],
+    label="Cities",
+    s=80
 )
 
-# Αεροδρόμια
+# αεροδρόμια
 plt.scatter(
-    best_airports[:, 0],
-    best_airports[:, 1],
+    airports[:, 0],
+    airports[:, 1],
     marker="X",
-    s=400,
-    color="red",
+    s=250,
     label="Airports"
 )
 
-# Γραμμές πόλης -> αεροδρομίου
-for i in range(len(cities_np)):
-    airport_id = assignments[i]
+# σύνδεση κάθε πόλης με το κοντινότερο αεροδρόμιο
+for city in cities:
+
+    distances = np.linalg.norm(
+        airports - city,
+        axis=1
+    )
+
+    nearest = np.argmin(distances)
 
     plt.plot(
-        [city_x[i], best_airports[airport_id, 0]],
-        [city_y[i], best_airports[airport_id, 1]],
-        linestyle="--",
-        linewidth=1,
+        [city[0], airports[nearest, 0]],
+        [city[1], airports[nearest, 1]],
         alpha=0.5
     )
 
-# Labels πόλεων
-for i in range(len(cities_np)):
-    plt.annotate(
-        f"C{i}",
-        (city_x[i], city_y[i]),
-        xytext=(5, 5),
-        textcoords="offset points"
-    )
-
-# Labels αεροδρομίων
-for i in range(len(best_airports)):
-    plt.annotate(
-        f"A{i}",
-        (best_airports[i, 0], best_airports[i, 1]),
-        xytext=(5, 5),
-        textcoords="offset points",
-        fontsize=12,
-        fontweight="bold"
-    )
-
-plt.title(
-    f"Airport Optimization (n={len(best_airports)})\nCost = {best_cost:.2f}"
-)
-
-plt.xlabel("X")
-plt.ylabel("Y")
-
 plt.grid(True)
 plt.legend()
-
 plt.axis("equal")
-
 plt.show()
+    
