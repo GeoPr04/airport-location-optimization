@@ -12,7 +12,7 @@ def calc_cost(data, list_children):
             closest_aiport = min(range(len(child)), key=lambda k: calc_dist(child[k][0], child[k][1], j[0], j[1]))
 
             cost += j[2] * calc_dist(child[closest_aiport][0], child[closest_aiport][1], j[0], j[1])
-            
+
         list_children_cost.append((child, cost))
 
     return list_children_cost
@@ -106,63 +106,8 @@ def genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 
         best_2_parents = find_best_parents(list_children_cost)
 
         error_cost.append(best_2_parents[0][1])
-    
 
-    print("best cost:", error_cost[-1])
-    plt.plot(error_cost)
-
-    new_data = [t[:-1] for t in data]
-    cities = np.array(new_data)
-    airports = np.array(best_2_parents[0][0])
-
-    # print(cities)
-    # print(airports)
-
-    # ======================
-    # PLOT
-    # ======================
-
-    plt.figure(figsize=(8, 6))
-
-    # πόλεις
-    plt.scatter(
-        cities[:, 0],
-        cities[:, 1],
-        label="Cities",
-        s=80
-    )
-
-    # αεροδρόμια
-    plt.scatter(
-        airports[:, 0],
-        airports[:, 1],
-        marker="X",
-        s=250,
-        label="Airports"
-    )
-
-    # σύνδεση κάθε πόλης με το κοντινότερο αεροδρόμιο
-    for city in cities:
-
-        distances = np.linalg.norm(
-            airports - city,
-            axis=1
-        )
-
-        nearest = np.argmin(distances)
-
-        plt.plot(
-            [city[0], airports[nearest, 0]],
-            [city[1], airports[nearest, 1]],
-            alpha=0.5
-        )
-
-    plt.grid(True)
-    plt.legend()
-    plt.axis("equal")
-    plt.show()
-        
-
+    return best_2_parents[0], error_cost
 
 
 
