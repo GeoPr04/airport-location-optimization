@@ -1,11 +1,26 @@
 import numpy as np
 from functions.distance import calc_dist
 import random
+import matplotlib.pyplot as plt
+
+def calc_cost(data, list_children):
+    list_children_cost = []
+    for child in list_children:
+        cost = 0
+
+        for j in data:
+            closest_aiport = min(range(len(child)), key=lambda k: calc_dist(child[k][0], child[k][1], j[0], j[1]))
+
+            cost += j[2] * calc_dist(child[closest_aiport][0], child[closest_aiport][1], j[0], j[1])
+            
+        list_children_cost.append((child, cost))
+
+    return list_children_cost
 
 
 def initialize(data, n_children, n_airports, boundries):
 
-    list_children = [] # [aiports, cost]
+    list_children_cost = [] # [aiports, cost]
     for i in range(n_children):
         cost = 0
 
@@ -21,9 +36,9 @@ def initialize(data, n_children, n_airports, boundries):
 
             cost += j[2] * calc_dist(list_airports[closest_aiport][0], list_airports[closest_aiport][1], j[0], j[1])
         
-        list_children.append((list_airports, cost))
+        list_children_cost.append((list_airports, cost))
 
-    return list_children
+    return list_children_cost
 
 def find_best_parents(list_children):
     
@@ -47,33 +62,107 @@ def crossover(parent1, parent2):
     return child
 
 
-def mutation():
-    pass
+def mutation(child, mutation_rate, mutation_strength_perc, boundries):
+    mutated_child = []
+
+    for airport in child:
+        if random.random() < mutation_rate:
+            new_airport = (airport[0]+random.uniform(-mutation_strength_perc*boundries[0], -mutation_strength_perc*boundries[0]))
+            mutated_child.append(new_airport)
+    return child
 
 
-def next_gen(data, n_children, n_airports, boundries):
-    pass
+def next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, boundries):
 
+    list_children = []
+    for i in range(n_children-2):
 
-
-def genetic_algorthm(data):
-    n_airports = 2
-    boundries = (300, 250)
-    n_children = 10
-    generations = 10
-
-    
-    list_children = initialize(data, n_children, n_airports, boundries)
-
-
-
-
-    for i in range(1):
-        best_2_parents = find_best_parents(list_children)
         child = crossover(best_2_parents[0], best_2_parents[1])
-        print("\n", best_2_parents[0])
-        print("\n", best_2_parents[1])
-        print("\n", child, "\n")
+        child = mutation(child, mutation_rate, mutation_strength_perc, boundries)
+        list_children.append(child)
+
+    return list_children
+
+
+
+def genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.7, mutation_strength_perc = 0.4):
+
+
+    list_children_cost = initialize(data, n_children, n_airports, boundries)
+
+    best_2_parents = find_best_parents(list_children_cost)
+
+    error_cost = [best_2_parents[0][1]]
+
+    for i in range(iterations): # iterations
+
+        list_children = next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, boundries)
+
+        list_children.append(best_2_parents[0][0])
+        list_children.append(best_2_parents[1][0])
+
+        list_children_cost = calc_cost(data, list_children)
+
+        best_2_parents = find_best_parents(list_children_cost)
+
+        error_cost.append(best_2_parents[0][1])
+    
+
+    print("best cost:", error_cost[-1])
+    plt.plot(error_cost)
+
+    new_data = [t[:-1] for t in data]
+    cities = np.array(new_data)
+    airports = np.array(best_2_parents[0][0])
+
+    # print(cities)
+    # print(airports)
+
+    # ======================
+    # PLOT
+    # ======================
+
+    plt.figure(figsize=(8, 6))
+
+    # πόλεις
+    plt.scatter(
+        cities[:, 0],
+        cities[:, 1],
+        label="Cities",
+        s=80
+    )
+
+    # αεροδρόμια
+    plt.scatter(
+        airports[:, 0],
+        airports[:, 1],
+        marker="X",
+        s=250,
+        label="Airports"
+    )
+
+    # σύνδεση κάθε πόλης με το κοντινότερο αεροδρόμιο
+    for city in cities:
+
+        distances = np.linalg.norm(
+            airports - city,
+            axis=1
+        )
+
+        nearest = np.argmin(distances)
+
+        plt.plot(
+            [city[0], airports[nearest, 0]],
+            [city[1], airports[nearest, 1]],
+            alpha=0.5
+        )
+
+    plt.grid(True)
+    plt.legend()
+    plt.axis("equal")
+    plt.show()
+        
+
 
 
 
