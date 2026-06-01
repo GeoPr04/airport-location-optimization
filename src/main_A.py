@@ -1,1 +1,83 @@
-print("Hello World Mixalis")
+import numpy as np
+from scipy.optimize import minimize
+import matplotlib.pyplot as plt
+
+# -----------------------------
+# ΔΕΔΟΜΕΝΑ ΠΟΛΕΩΝ
+# -----------------------------
+
+cities = np.array([
+    [80, 140],
+    [110, 200],
+    [190, 150],
+    [250, 200],
+    [240, 90],
+    [200, 60],
+    [100, 70]
+], dtype=float)
+
+
+# -----------------------------
+# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ ΓΙΑ ΤΟ Α
+# -----------------------------
+
+def total_distance(point):
+    x, y = point
+    distances = np.sqrt((cities[:, 0] - x) ** 2 + (cities[:, 1] - y) ** 2)
+    return np.sum(distances)
+
+
+# -----------------------------
+# ΒΕΛΤΙΣΤΟΠΟΙΗΣΗ
+# -----------------------------
+
+initial_guess = np.mean(cities, axis=0)
+
+result = minimize(
+    total_distance,
+    initial_guess,
+    method="Nelder-Mead"
+)
+
+airport = result.x
+cost = result.fun
+
+print("ΕΡΩΤΗΜΑ Α - Απλή χωροθέτηση ενός αεροδρομίου")
+print(f"Βέλτιστη θέση αεροδρομίου: x = {airport[0]:.2f}, y = {airport[1]:.2f}")
+print(f"Συνολικό άθροισμα αποστάσεων: {cost:.2f}")
+
+
+# -----------------------------
+# ΓΡΑΦΗΜΑ
+# -----------------------------
+
+plt.figure(figsize=(8, 6))
+
+plt.scatter(cities[:, 0], cities[:, 1], s=120, label="Πόλεις")
+
+for x, y in cities:
+    plt.text(x + 3, y + 3, f"({int(x)}, {int(y)})")
+
+plt.scatter(
+    airport[0],
+    airport[1],
+    marker="*",
+    s=300,
+    label=f"Αεροδρόμιο ({airport[0]:.2f}, {airport[1]:.2f})"
+)
+
+for city in cities:
+    plt.plot(
+        [airport[0], city[0]],
+        [airport[1], city[1]],
+        linestyle="--",
+        alpha=0.5
+    )
+
+plt.title("Ερώτημα Α - Απλή χωροθέτηση ενός αεροδρομίου")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid(True)
+plt.legend()
+plt.axis("equal")
+plt.show()
