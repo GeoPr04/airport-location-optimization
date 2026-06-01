@@ -67,9 +67,11 @@ def mutation(child, mutation_rate, mutation_strength_perc, boundries):
 
     for airport in child:
         if random.random() < mutation_rate:
-            new_airport = (airport[0]+random.uniform(-mutation_strength_perc*boundries[0], -mutation_strength_perc*boundries[0]))
+            new_airport = (airport[0]+random.uniform(-mutation_strength_perc*boundries[0], mutation_strength_perc*boundries[0]), airport[1]+random.uniform(-mutation_strength_perc*boundries[1], mutation_strength_perc*boundries[1]))
             mutated_child.append(new_airport)
-    return child
+        else:
+            mutated_child.append(airport)
+    return mutated_child
 
 
 def next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, boundries):
@@ -85,7 +87,7 @@ def next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, 
 
 
 
-def genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.7, mutation_strength_perc = 0.4):
+def genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 1, mutation_rate = 0.3, mutation_strength_perc = 0.2):
 
 
     list_children_cost = initialize(data, n_children, n_airports, boundries)
@@ -97,7 +99,6 @@ def genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 
     for i in range(iterations): # iterations
 
         list_children = next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, boundries)
-
         list_children.append(best_2_parents[0][0])
         list_children.append(best_2_parents[1][0])
 

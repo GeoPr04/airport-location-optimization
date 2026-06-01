@@ -5,7 +5,7 @@ import numpy as np
 
 data = read_data("C")
 
-best_solution , error_cost = genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.7, mutation_strength_perc = 0.4)
+best_solution , error_cost = genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.3, mutation_strength_perc = 0.2)
 
 
 # visualization
