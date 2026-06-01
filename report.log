@@ -8,3 +8,7 @@
 2026-06-01 21:25:06,237 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 27944749.59384535, best pos: [ 84.00972719 138.78370424 237.8610307   91.4536556 ]
 2026-06-01 21:43:53,118 - pyswarms.single.global_best - INFO - Optimize for 200 iters with {'c1': 1.5, 'c2': 1.5, 'w': 0.7}
 2026-06-01 21:43:53,430 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 27944761.758001536, best pos: [238.13602518  91.22901866  84.24698575 139.06997953]
+2026-06-02 01:44:40,812 - pyswarms.single.global_best - INFO - Optimize for 200 iters with {'c1': 1.5, 'c2': 1.5, 'w': 0.7}
+2026-06-02 01:44:41,013 - pyswarms.single.global_best - INFO - Optimization finished | best cost: 120054461.79428393, best pos: [402.55568058 126.77688175 220.30085112 363.72774377 329.68788333
+ 262.34973061 120.30658822 444.49555145 331.64604522 365.33499526
+ 104.25298095  68.61465343]
