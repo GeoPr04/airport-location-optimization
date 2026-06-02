@@ -1,7 +1,5 @@
-import numpy as np
 from functions.distance import calc_dist
 import random
-import matplotlib.pyplot as plt
 
 def calc_cost(data, list_children):
     list_children_cost = []
@@ -21,11 +19,11 @@ def calc_cost(data, list_children):
 def initialize(data, n_children, n_airports, boundries):
 
     list_children_cost = [] # [aiports, cost]
-    for i in range(n_children):
+    for _ in range(n_children):
         cost = 0
 
         list_airports = [] # [(x,y),...]
-        for n in range(n_airports):
+        for _ in range(n_airports):
             x = random.randint(0, boundries[0])
             y = random.randint(0, boundries[1])
             list_airports.append((x, y))
@@ -67,15 +65,17 @@ def mutation(child, mutation_rate, mutation_strength_perc, boundries):
 
     for airport in child:
         if random.random() < mutation_rate:
-            new_airport = (airport[0]+random.uniform(-mutation_strength_perc*boundries[0], -mutation_strength_perc*boundries[0]))
+            new_airport = (airport[0]+random.uniform(-mutation_strength_perc*boundries[0], mutation_strength_perc*boundries[0]), airport[1]+random.uniform(-mutation_strength_perc*boundries[1], mutation_strength_perc*boundries[1]))
             mutated_child.append(new_airport)
-    return child
+        else:
+            mutated_child.append(airport)
+    return mutated_child
 
 
 def next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, boundries):
 
     list_children = []
-    for i in range(n_children-2):
+    for _ in range(n_children-2):
 
         child = crossover(best_2_parents[0], best_2_parents[1])
         child = mutation(child, mutation_rate, mutation_strength_perc, boundries)
@@ -85,7 +85,13 @@ def next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, 
 
 
 
-def genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.7, mutation_strength_perc = 0.4):
+def genetic_algorthm(data,
+                     n_airports = 2,
+                     boundries = (300, 250),
+                     n_children = 800,
+                     iterations = 20,
+                     mutation_rate = 0.3,
+                     mutation_strength_perc = 0.2):
 
 
     list_children_cost = initialize(data, n_children, n_airports, boundries)
@@ -94,10 +100,9 @@ def genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 
 
     error_cost = [best_2_parents[0][1]]
 
-    for i in range(iterations): # iterations
+    for _ in range(iterations): # iterations
 
         list_children = next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, boundries)
-
         list_children.append(best_2_parents[0][0])
         list_children.append(best_2_parents[1][0])
 

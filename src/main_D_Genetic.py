@@ -1,11 +1,26 @@
-from functions.read_data import read_data
 from optimizers.genetic import genetic_algorthm
+from functions.make_cities import make_cities
 import matplotlib.pyplot as plt
+import random
 import numpy as np
 
-data = read_data("C")
 
-best_solution , error_cost = genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.3, mutation_strength_perc = 0.2)
+boundries = [500, 500]
+n_cities = 20 # random.randint(3, 30)
+n_airports = 6 # random.randint(1, 8)
+population_min = 40000
+population_max = 140000
+
+
+cities = make_cities(n_cities, boundries)
+best_solution , error_cost = genetic_algorthm(cities,
+                                              n_airports=n_airports,
+                                              boundries=boundries,
+                                              n_children = 800,
+                                              iterations = 20,
+                                              mutation_rate = 0.3,
+                                              mutation_strength_perc = 0.2)
+
 
 
 # visualization
@@ -13,7 +28,7 @@ best_solution , error_cost = genetic_algorthm(data, n_airports = 2, boundries = 
 print("best cost:", error_cost[-1])
 plt.plot(error_cost)
 
-new_data = [t[:-1] for t in data]
+new_data = [t[:-1] for t in cities]
 cities = np.array(new_data)
 airports = np.array(best_solution[0])
 
