@@ -1,11 +1,12 @@
 from functions.read_data import read_data
-from optimizers.genetic import genetic_algorthm
+# from optimizers.genetic import genetic_algorthm
+from optimizers.genetic_lab_implementation import genetic_algorithm
 import matplotlib.pyplot as plt
 import numpy as np
 
 data = read_data("C")
 
-best_solution , error_cost = genetic_algorthm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.3, mutation_strength_perc = 0.2)
+best_solution , error_cost = genetic_algorithm(data, n_airports = 2, boundries = (300, 250), n_children = 800, iterations = 10, mutation_rate = 0.3, mutation_strength_perc = 0.2)
 
 
 # visualization
@@ -26,7 +27,7 @@ airports = np.array(best_solution[0])
 
 plt.figure(figsize=(8, 6))
 
-# πόλεις
+# cities
 plt.scatter(
     cities[:, 0],
     cities[:, 1],
@@ -34,7 +35,7 @@ plt.scatter(
     s=80
 )
 
-# αεροδρόμια
+# airports
 plt.scatter(
     airports[:, 0],
     airports[:, 1],
@@ -43,7 +44,7 @@ plt.scatter(
     label="Airports"
 )
 
-# σύνδεση κάθε πόλης με το κοντινότερο αεροδρόμιο
+# connect each city with its closest airport
 for city in cities:
 
     distances = np.linalg.norm(

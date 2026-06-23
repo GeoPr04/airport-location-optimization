@@ -1,4 +1,5 @@
-from optimizers.genetic import genetic_algorthm
+# from optimizers.genetic import genetic_algorithm
+from optimizers.genetic_lab_implementation import genetic_algorithm
 from functions.make_cities import make_cities
 import matplotlib.pyplot as plt
 import random
@@ -12,8 +13,9 @@ population_min = 40000
 population_max = 140000
 
 
-cities = make_cities(n_cities, boundries)
-best_solution , error_cost = genetic_algorthm(cities,
+cities = make_cities(n_cities, boundries, population_min = population_min, population_max = population_max)
+
+best_solution , error_cost = genetic_algorithm(cities,
                                               n_airports=n_airports,
                                               boundries=boundries,
                                               n_children = 800,
@@ -25,12 +27,19 @@ best_solution , error_cost = genetic_algorthm(cities,
 
 # visualization
 
-print("best cost:", error_cost[-1])
-plt.plot(error_cost)
-
 new_data = [t[:-1] for t in cities]
 cities = np.array(new_data)
 airports = np.array(best_solution[0])
+
+
+print("best cost:", error_cost[-1])
+plt.figure()
+plt.xlabel("Iteration")
+plt.ylabel("Best cost")
+plt.title("PSO convergence")
+plt.grid(True)
+plt.plot(error_cost)
+
 
 # print(cities)
 # print(airports)
@@ -41,7 +50,7 @@ airports = np.array(best_solution[0])
 
 plt.figure(figsize=(8, 6))
 
-# πόλεις
+# cities
 plt.scatter(
     cities[:, 0],
     cities[:, 1],
@@ -49,7 +58,7 @@ plt.scatter(
     s=80
 )
 
-# αεροδρόμια
+# airports
 plt.scatter(
     airports[:, 0],
     airports[:, 1],
@@ -58,7 +67,7 @@ plt.scatter(
     label="Airports"
 )
 
-# σύνδεση κάθε πόλης με το κοντινότερο αεροδρόμιο
+# connect each city with its closest airport
 for city in cities:
 
     distances = np.linalg.norm(

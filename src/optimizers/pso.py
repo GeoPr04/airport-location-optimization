@@ -71,12 +71,13 @@ def pso_airport_optimization(
         n_particles=n_particles,
         dimensions=dimensions,
         options=options,
-        bounds=bounds
+        bounds=bounds,
     )
 
     best_cost, best_position = optimizer.optimize(
         objective_function,
-        iters=iterations
+        iters=iterations,
+        verbose=False
     )
 
     best_airports = best_position.reshape(n_airports, 2)
@@ -88,5 +89,6 @@ def pso_airport_optimization(
     )
 
     assignments = np.argmin(distances, axis=1)
+    cost_history = optimizer.cost_history
 
-    return best_airports, best_cost, assignments
+    return best_airports, best_cost, assignments, cost_history

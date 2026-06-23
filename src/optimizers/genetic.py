@@ -1,5 +1,8 @@
-from functions.distance import calc_dist
 import random
+import numpy as np
+
+def calc_dist(x1, y1, x2, y2):
+    return np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
 
 def calc_cost(data, list_children):
     list_children_cost = []
@@ -85,7 +88,7 @@ def next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, 
 
 
 
-def genetic_algorthm(data,
+def genetic_algorithm(data,
                      n_airports = 2,
                      boundries = (300, 250),
                      n_children = 800,
