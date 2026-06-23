@@ -88,7 +88,7 @@ def next_gen(best_2_parents, n_children, mutation_rate, mutation_strength_perc, 
 
 
 
-def genetic_algorthm(data,
+def genetic_algorithm(data,
                      n_airports = 2,
                      boundries = (300, 250),
                      n_children = 800,

@@ -168,7 +168,3 @@ def genetic_algorithm(
         error_cost.append(best_solution[1])
 
     return best_solution, error_cost
-
-
-def genetic_algorthm(*args, **kwargs):
-    return genetic_algorithm(*args, **kwargs)

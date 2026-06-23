@@ -1,4 +1,5 @@
-from optimizers.genetic import genetic_algorthm
+# from optimizers.genetic import genetic_algorithm
+from optimizers.genetic_lab_implementation import genetic_algorithm
 from functions.make_cities import make_cities
 import matplotlib.pyplot as plt
 import random
@@ -13,7 +14,7 @@ population_max = 140000
 
 
 cities = make_cities(n_cities, boundries)
-best_solution , error_cost = genetic_algorthm(cities,
+best_solution , error_cost = genetic_algorithm(cities,
                                               n_airports=n_airports,
                                               boundries=boundries,
                                               n_children = 800,
@@ -41,7 +42,7 @@ airports = np.array(best_solution[0])
 
 plt.figure(figsize=(8, 6))
 
-# πόλεις
+# cities
 plt.scatter(
     cities[:, 0],
     cities[:, 1],
@@ -49,7 +50,7 @@ plt.scatter(
     s=80
 )
 
-# αεροδρόμια
+# airports
 plt.scatter(
     airports[:, 0],
     airports[:, 1],
@@ -58,7 +59,7 @@ plt.scatter(
     label="Airports"
 )
 
-# σύνδεση κάθε πόλης με το κοντινότερο αεροδρόμιο
+# connect each city with its closest airport
 for city in cities:
 
     distances = np.linalg.norm(
