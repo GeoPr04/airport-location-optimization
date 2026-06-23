@@ -13,7 +13,8 @@ population_min = 40000
 population_max = 140000
 
 
-cities = make_cities(n_cities, boundries)
+cities = make_cities(n_cities, boundries, population_min = population_min, population_max = population_max)
+
 best_solution , error_cost = genetic_algorithm(cities,
                                               n_airports=n_airports,
                                               boundries=boundries,
@@ -26,12 +27,19 @@ best_solution , error_cost = genetic_algorithm(cities,
 
 # visualization
 
-print("best cost:", error_cost[-1])
-plt.plot(error_cost)
-
 new_data = [t[:-1] for t in cities]
 cities = np.array(new_data)
 airports = np.array(best_solution[0])
+
+
+print("best cost:", error_cost[-1])
+plt.figure()
+plt.xlabel("Iteration")
+plt.ylabel("Best cost")
+plt.title("PSO convergence")
+plt.grid(True)
+plt.plot(error_cost)
+
 
 # print(cities)
 # print(airports)

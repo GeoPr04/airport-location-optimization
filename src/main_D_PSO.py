@@ -13,8 +13,8 @@ population_max = 140000
 
 
 cities = make_cities(n_cities, boundries)
-print(cities)
-best_airports, best_cost, assignments = pso_airport_optimization(cities=cities, n_airports=n_airports)
+# print(cities)
+best_airports, best_cost, assignments, cost_history = pso_airport_optimization(cities=cities, n_airports=n_airports)
 
 
 
@@ -25,6 +25,14 @@ cities_np = np.array(cities)
 city_x = cities_np[:, 0]
 city_y = cities_np[:, 1]
 city_pop = cities_np[:, 2]
+
+
+plt.figure()
+plt.plot(cost_history)
+plt.xlabel("Iteration")
+plt.ylabel("Best cost")
+plt.title("PSO convergence")
+plt.grid(True)
 
 plt.figure(figsize=(10, 8))
 
