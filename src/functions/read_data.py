@@ -8,4 +8,4 @@ def read_data(stage): # example: stage = "A"
             inside = line[line.find("(")+1 : line.find(")")]
             data.append(tuple(map(int, inside.split(","))))
 
-    return data # (x, y, population)
+    return data # list(x, y, population)
