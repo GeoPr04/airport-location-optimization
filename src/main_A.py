@@ -16,7 +16,7 @@ cities = np.array([
 ], dtype=float)
 
 # -----------------------------
-# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ
+# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ (Α)
 # -----------------------------
 
 def total_distance(point):
@@ -25,7 +25,7 @@ def total_distance(point):
     return np.sum(distances)
 
 # -----------------------------
-# MONTE CARLO OPTIMIZATION
+# ΒΕΛΤΙΣΤΟΠΟΙΗΣΗ
 # -----------------------------
 
 best_cost = float("inf")
