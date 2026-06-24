@@ -26,7 +26,7 @@ populations = np.array([
 ], dtype=float)
 
 # -----------------------------
-# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ
+# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ (Β)
 # -----------------------------
 
 def weighted_total_distance(point):
@@ -40,7 +40,7 @@ def weighted_total_distance(point):
     return np.sum(populations * distances)
 
 # -----------------------------
-# MONTE CARLO SEARCH
+# ΒΕΛΤΙΣΤΟΠΟΙΗΣΗ
 # -----------------------------
 
 best_cost = float("inf")
