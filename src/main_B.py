@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 
 # -----------------------------
@@ -26,50 +25,64 @@ populations = np.array([
     70000
 ], dtype=float)
 
-
 # -----------------------------
-# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ ΓΙΑ ΤΟ Β
+# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ
 # -----------------------------
 
 def weighted_total_distance(point):
     x, y = point
-    distances = np.sqrt((cities[:, 0] - x) ** 2 + (cities[:, 1] - y) ** 2)
+
+    distances = np.sqrt(
+        (cities[:,0] - x)**2 +
+        (cities[:,1] - y)**2
+    )
+
     return np.sum(populations * distances)
 
-
 # -----------------------------
-# ΒΕΛΤΙΣΤΟΠΟΙΗΣΗ
+# MONTE CARLO SEARCH
 # -----------------------------
 
-initial_guess = np.average(cities, axis=0, weights=populations)
+best_cost = float("inf")
+best_point = None
 
-result = minimize(
-    weighted_total_distance,
-    initial_guess,
-    method="Nelder-Mead"
-)
+for _ in range(30000):
 
-airport = result.x
-cost = result.fun
+    x = np.random.uniform(50, 300)
+    y = np.random.uniform(50, 250)
+
+    cost = weighted_total_distance([x, y])
+
+    if cost < best_cost:
+        best_cost = cost
+        best_point = [x, y]
+
+airport = np.array(best_point)
+cost = best_cost
 
 print("ΕΡΩΤΗΜΑ Β - Σταθμισμένη χωροθέτηση ενός αεροδρομίου")
 print(f"Βέλτιστη θέση αεροδρομίου: x = {airport[0]:.2f}, y = {airport[1]:.2f}")
 print(f"Σταθμισμένο συνολικό κόστος: {cost:.2f}")
 
-
 # -----------------------------
 # ΓΡΑΦΗΜΑ
 # -----------------------------
 
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(8,6))
 
 sizes = populations / 800
 
-plt.scatter(cities[:, 0], cities[:, 1], s=sizes, label="Πόλεις")
+plt.scatter(
+    cities[:,0],
+    cities[:,1],
+    s=sizes,
+    label="Πόλεις"
+)
 
 for i, (x, y) in enumerate(cities):
-    plt.text(x + 3, y + 3, f"({int(x)}, {int(y)})")
-    plt.text(x - 15, y + 14, f"{int(populations[i]):,}".replace(",", "."))
+    plt.text(x+3, y+3, f"({int(x)}, {int(y)})")
+    plt.text(x-15, y+14,
+             f"{int(populations[i]):,}".replace(",", "."))
 
 plt.scatter(
     airport[0],
@@ -83,7 +96,7 @@ for city in cities:
     plt.plot(
         [airport[0], city[0]],
         [airport[1], city[1]],
-        linestyle="--",
+        "--",
         alpha=0.5
     )
 
