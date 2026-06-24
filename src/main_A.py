@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 
 # -----------------------------
@@ -16,47 +15,50 @@ cities = np.array([
     [100, 70]
 ], dtype=float)
 
-
 # -----------------------------
-# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ ΓΙΑ ΤΟ Α
+# ΣΥΝΑΡΤΗΣΗ ΚΟΣΤΟΥΣ
 # -----------------------------
 
 def total_distance(point):
     x, y = point
-    distances = np.sqrt((cities[:, 0] - x) ** 2 + (cities[:, 1] - y) ** 2)
+    distances = np.sqrt((cities[:,0]-x)**2 + (cities[:,1]-y)**2)
     return np.sum(distances)
 
-
 # -----------------------------
-# ΒΕΛΤΙΣΤΟΠΟΙΗΣΗ
+# MONTE CARLO OPTIMIZATION
 # -----------------------------
 
-initial_guess = np.mean(cities, axis=0)
+best_cost = float("inf")
+best_point = None
 
-result = minimize(
-    total_distance,
-    initial_guess,
-    method="Nelder-Mead"
-)
+for _ in range(20000):
 
-airport = result.x
-cost = result.fun
+    x = np.random.uniform(50, 300)
+    y = np.random.uniform(50, 250)
+
+    cost = total_distance([x, y])
+
+    if cost < best_cost:
+        best_cost = cost
+        best_point = [x, y]
+
+airport = np.array(best_point)
+cost = best_cost
 
 print("ΕΡΩΤΗΜΑ Α - Απλή χωροθέτηση ενός αεροδρομίου")
 print(f"Βέλτιστη θέση αεροδρομίου: x = {airport[0]:.2f}, y = {airport[1]:.2f}")
 print(f"Συνολικό άθροισμα αποστάσεων: {cost:.2f}")
 
-
 # -----------------------------
 # ΓΡΑΦΗΜΑ
 # -----------------------------
 
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(8,6))
 
-plt.scatter(cities[:, 0], cities[:, 1], s=120, label="Πόλεις")
+plt.scatter(cities[:,0], cities[:,1], s=120, label="Πόλεις")
 
 for x, y in cities:
-    plt.text(x + 3, y + 3, f"({int(x)}, {int(y)})")
+    plt.text(x+3, y+3, f"({int(x)}, {int(y)})")
 
 plt.scatter(
     airport[0],
@@ -70,7 +72,7 @@ for city in cities:
     plt.plot(
         [airport[0], city[0]],
         [airport[1], city[1]],
-        linestyle="--",
+        "--",
         alpha=0.5
     )
 
