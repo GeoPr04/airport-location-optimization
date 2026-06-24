@@ -1,21 +1,23 @@
-from optimizers.pso import pso_airport_optimization
-from functions.make_cities import make_cities
-import matplotlib.pyplot as plt
 import random
+
+import matplotlib.pyplot as plt
 import numpy as np
 
+from functions.make_cities import make_cities
+from optimizers.pso import pso_airport_optimization
 
 boundries = [500, 500]
-n_cities = 20 # random.randint(3, 30)
-n_airports = 6 # random.randint(1, 8)
+n_cities = 20  # random.randint(3, 30)
+n_airports = 6  # random.randint(1, 8)
 population_min = 40000
 population_max = 140000
 
 
 cities = make_cities(n_cities, boundries)
 # print(cities)
-best_airports, best_cost, assignments, cost_history = pso_airport_optimization(cities=cities, n_airports=n_airports)
-
+best_airports, best_cost, assignments, cost_history = pso_airport_optimization(
+    cities=cities, n_airports=n_airports
+)
 
 
 # visualization
@@ -46,7 +48,7 @@ plt.scatter(
     s=city_pop / 1000,  # μέγεθος ανάλογο πληθυσμού
     c=colors,
     alpha=0.7,
-    label="Cities"
+    label="Cities",
 )
 
 # Αεροδρόμια
@@ -56,7 +58,7 @@ plt.scatter(
     marker="X",
     s=400,
     color="red",
-    label="Airports"
+    label="Airports",
 )
 
 # Γραμμές πόλης -> αεροδρομίου
@@ -68,16 +70,13 @@ for i in range(len(cities_np)):
         [city_y[i], best_airports[airport_id, 1]],
         linestyle="--",
         linewidth=1,
-        alpha=0.5
+        alpha=0.5,
     )
 
 # Labels πόλεων
 for i in range(len(cities_np)):
     plt.annotate(
-        f"C{i}",
-        (city_x[i], city_y[i]),
-        xytext=(5, 5),
-        textcoords="offset points"
+        f"C{i}", (city_x[i], city_y[i]), xytext=(5, 5), textcoords="offset points"
     )
 
 # Labels αεροδρομίων
@@ -88,12 +87,10 @@ for i in range(len(best_airports)):
         xytext=(5, 5),
         textcoords="offset points",
         fontsize=12,
-        fontweight="bold"
+        fontweight="bold",
     )
 
-plt.title(
-    f"Airport Optimization (n={len(best_airports)})\nCost = {best_cost:.2f}"
-)
+plt.title(f"Airport Optimization (n={len(best_airports)})\nCost = {best_cost:.2f}")
 
 plt.xlabel("X")
 plt.ylabel("Y")
