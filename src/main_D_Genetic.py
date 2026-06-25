@@ -35,7 +35,7 @@ plot_airport_system(
 )
 
 
-# visualization
+# old visualization
 
 # new_data = [t[:-1] for t in cities]
 # cities = np.array(new_data)

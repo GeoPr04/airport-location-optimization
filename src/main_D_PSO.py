@@ -23,7 +23,7 @@ best_airports, best_cost, assignments, cost_history = pso_airport_optimization(
 
 plot_airport_system(cities, best_airports, title="Stage D: PSO Algorithm Optimization")
 """
-# visualization
+#old visualization
 
 cities_np = np.array(cities)
 
