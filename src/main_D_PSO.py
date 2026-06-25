@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from functions.make_cities import make_cities
+from functions.visualization import plot_airport_system
 from optimizers.pso import pso_airport_optimization
 
 boundries = [500, 500]
@@ -20,6 +21,8 @@ best_airports, best_cost, assignments, cost_history = pso_airport_optimization(
 )
 
 
+plot_airport_system(cities, best_airports, title="Stage D: PSO Algorithm Optimization")
+"""
 # visualization
 
 cities_np = np.array(cities)
@@ -101,3 +104,4 @@ plt.legend()
 plt.axis("equal")
 
 plt.show()
+"""
