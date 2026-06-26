@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from functions.make_cities import make_cities
-from functions.visualization import plot_airport_system
+from functions.visualization import plot_interactive_dashboard
 from optimizers.genetic_lab_implementation import genetic_algorithm
 from optimizers.pso import pso_airport_optimization
 
@@ -47,8 +47,6 @@ best_airports_pso, best_cost_pso, assignments_pso, cost_history = (
 time_pso = time.perf_counter() - time_genetic
 
 
-new_data = [t[:-1] for t in cities]
-cities = np.array(new_data)
 airports = np.array(best_solution_genetic[0])
 
 for i in range(len(error_cost_genetic)):
@@ -65,6 +63,10 @@ plt.title("Algorithm Convergence Comparison")
 plt.grid(True, linestyle=":", alpha=0.6)
 plt.legend()
 
+# Γράφημα 2:
+plot_interactive_dashboard(cities)
+
+"""
 # Γράφημα 2: Ο Χάρτης με τη λύση του Γενετικού Αλγορίθμου
 best_airports_genetic = best_solution_genetic[0]
 plot_airport_system(
@@ -75,7 +77,7 @@ plot_airport_system(
 plot_airport_system(
     cities, best_airports_pso, title="Stage D: Particle Swarm Optimization (PSO)"
 )
-
+"""
 """
 OLD GRAPHIMA
 print(f"Genetic algorithm ran for: {time_genetic:.2f}s")
