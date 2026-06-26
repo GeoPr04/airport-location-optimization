@@ -1,13 +1,9 @@
 import numpy as np
 import pyswarms as ps
 
+
 def pso_airport_optimization(
-    cities,
-    n_airports,
-    x_bounds=None,
-    y_bounds=None,
-    n_particles=50,
-    iterations=200
+    cities, n_airports, x_bounds=None, y_bounds=None, n_particles=50, iterations=200
 ):
     """
     cities: [(x, y, population), ...]
@@ -49,8 +45,7 @@ def pso_airport_optimization(
             airports = particle.reshape(n_airports, 2)
 
             distances = np.linalg.norm(
-                city_positions[:, None, :] - airports[None, :, :],
-                axis=2
+                city_positions[:, None, :] - airports[None, :, :], axis=2
             )
 
             nearest_distances = np.min(distances, axis=1)
@@ -64,7 +59,7 @@ def pso_airport_optimization(
     options = {
         "c1": 1.5,  # προσωπική εμπειρία particle
         "c2": 1.5,  # εμπειρία σμήνους
-        "w": 0.7    # inertia
+        "w": 0.7,  # inertia
     }
 
     optimizer = ps.single.GlobalBestPSO(
@@ -75,17 +70,14 @@ def pso_airport_optimization(
     )
 
     best_cost, best_position = optimizer.optimize(
-        objective_function,
-        iters=iterations,
-        verbose=False
+        objective_function, iters=iterations, verbose=False
     )
 
     best_airports = best_position.reshape(n_airports, 2)
 
     # Ανάθεση κάθε πόλης στο κοντινότερο αεροδρόμιο
     distances = np.linalg.norm(
-        city_positions[:, None, :] - best_airports[None, :, :],
-        axis=2
+        city_positions[:, None, :] - best_airports[None, :, :], axis=2
     )
 
     assignments = np.argmin(distances, axis=1)

@@ -14,26 +14,26 @@ best_solution, error_cost = genetic_algorithm(
     n_airports=2,
     boundries=(300, 250),
     n_children=800,
-    iterations=10,
+    iterations=50,
     mutation_rate=0.3,
     mutation_strength_perc=0.2,
 )
-# plot_airport_system(data, best_airports, title="Stage C")
 
-# old visualization
+# Γράφημα Α: Καμπύλη Σύγκλισης του Γενετικού Αλγορίθμου
+plt.figure(figsize=(6, 4))
+plt.plot(error_cost, color="blue", linewidth=2, label="Genetic Convergence")
+plt.xlabel("Iteration")
+plt.ylabel("Best Cost")
+plt.title("Genetic Algorithm Convergence (Stage C)")
+plt.grid(True, linestyle=":", alpha=0.6)
+plt.legend()
 
-print("best cost:", error_cost[-1])
-plt.plot(error_cost)
-
-new_data = [t[:-1] for t in data]
-cities = np.array(new_data)
-airports = np.array(best_solution[0])
-
-# print(cities)
-# print(airports)
-
+# Γράφημα Β: Ο 2D Χάρτης με τα 2 Βέλτιστα Αεροδρόμια
+best_airports = best_solution[0]
+plot_airport_system(data, best_airports, title="Στάδιο Γ - Δίκτυο Δύο Αεροδρομίων")
+"""
 # ======================
-# PLOT
+# OLD PLOT
 # ======================
 
 plt.figure(figsize=(8, 6))
@@ -58,3 +58,4 @@ plt.grid(True)
 plt.legend()
 plt.axis("equal")
 plt.show()
+"""
