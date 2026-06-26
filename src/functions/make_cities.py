@@ -10,15 +10,9 @@ def make_cities(
     population_max=140000,
     min_distance=60,
 ):
-    """
-    Παράγει n τυχαίες πόλεις εξασφαλίζοντας ότι καμία δεν είναι υπερβολικά κοντά σε άλλη.
-    min_distance: Η ελάχιστη επιτρεπόμενη Ευκλείδεια απόσταση μεταξύ δύο πόλεων.
-    """
 
     cities = []
-    max_attempts = (
-        2000  # Μέγιστες προσπάθειες για την αποφυγή ατέρμονου βρόχου (infinite loop)
-    )
+    max_attempts = 2000  # Μέγιστες προσπάθειες
 
     for _ in range(n_cities):
         attempts = 0
@@ -29,7 +23,7 @@ def make_cities(
             x = random.randint(15, boundries[0] - 15)
             y = random.randint(15, boundries[1] - 15)
 
-            # Έλεγχος αν η νέα θέση είναι πολύ κοντά σε κάποια ήδη υπάρχουσα πόλη
+            # Έλεγχος
             too_close = False
             for existing_city in cities:
                 dist = np.sqrt(
@@ -47,7 +41,7 @@ def make_cities(
 
             attempts += 1
 
-        # Αν εξαντληθούν οι προσπάθειες (π.χ. αν ζητήσουμε πάρα πολλές πόλεις σε μικρό χώρο)
+        # Αν εξαντληθούν οι προσπάθειες
         if not accepted:
             print(
                 f"Warning: Could only generate {len(cities)}/{n_cities} cities due to distance constraints."

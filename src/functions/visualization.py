@@ -4,9 +4,27 @@ from adjustText import adjust_text
 from matplotlib.widgets import Button, RadioButtons, Slider
 
 
+def _compute_voronoi_grid(airports_np, resolution=200):
+    """
+    Βοηθητική συνάρτηση: Υπολογίζει το πλέγμα Voronoi για το φόντο
+    με βάση τις τρέχουσες θέσεις των αεροδρομίων.
+    """
+    grid_x = np.linspace(-20, 520, resolution)
+    grid_y = np.linspace(-20, 520, resolution)
+    X, Y = np.meshgrid(grid_x, grid_y)
+    grid_points = np.c_[X.ravel(), Y.ravel()]
+
+    # Υπολογισμός απόστασης κάθε σημείου του φόντου από κάθε αεροδρόμιο
+    dist_grid = np.linalg.norm(
+        grid_points[:, None, :] - airports_np[None, :, :], axis=2
+    )
+    Z = np.argmin(dist_grid, axis=1).reshape(X.shape)
+    return X, Y, Z
+
+
 def plot_airport_system(cities, airports, title="Airport Location Optimization"):
     """
-    ΣΤΑΤΙΚΟ ΓΡΑΦΗΜΑ: Σχεδιάζει τον χάρτη για τα Στάδια Α, Β, Γ, Δ με γεωμετρικά σύνορα.
+    ΣΤΑΤΙΚΟ ΓΡΑΦΗΜΑ: Σχεδιάζει τον χάρτη για τα Στάδια Α, Β, Γ με γεωμετρικά σύνορα.
     """
     cities_np = np.array(cities, dtype=float)
     airports_np = np.array(airports, dtype=float)
@@ -14,6 +32,7 @@ def plot_airport_system(cities, airports, title="Airport Location Optimization")
     city_positions = cities_np[:, :2]
     populations = cities_np[:, 2] if cities_np.shape[1] > 2 else np.ones(len(cities_np))
 
+    # Υπολογισμός αποστάσεων και αναθέσεων πόλεων στα πλησιέστερα αεροδρόμια
     distances = np.linalg.norm(
         city_positions[:, None, :] - airports_np[None, :, :], axis=2
     )
@@ -21,24 +40,16 @@ def plot_airport_system(cities, airports, title="Airport Location Optimization")
     min_distances = np.min(distances, axis=1)
     total_cost = np.sum(populations * min_distances)
 
+    # Αρχικοποίηση παραθύρου γραφήματος
     plt.figure(figsize=(10, 8))
     cmap = plt.colormaps["tab10"].resampled(len(airports_np))
     colors = cmap(assignments)
 
-    # --- ΠΡΟΣΘΗΚΗ: ΓΕΩΜΕΤΡΙΚΑ ΣΥΝΟΡΑ (VORONOI BACKGROUND) ---
-    grid_x = np.linspace(-20, 520, 200)
-    grid_y = np.linspace(-20, 520, 200)
-    X, Y = np.meshgrid(grid_x, grid_y)
-    grid_points = np.c_[X.ravel(), Y.ravel()]
-    # Υπολογισμός κοντινότερου αεροδρομίου για κάθε σημείο του φόντου
-    dist_grid = np.linalg.norm(
-        grid_points[:, None, :] - airports_np[None, :, :], axis=2
-    )
-    Z = np.argmin(dist_grid, axis=1).reshape(X.shape)
-    # Σχεδίαση έγχρωμου φόντου (zorder=0 για να είναι τέρμα πίσω)
+    # Σχεδίαση γεωμετρικών συνόρων (Voronoi) στο φόντο
+    X, Y, Z = _compute_voronoi_grid(airports_np)
     plt.pcolormesh(X, Y, Z, cmap=cmap, alpha=0.12, shading="auto", zorder=0)
 
-    # 1. Γραμμές σύνδεσης
+    # Σχεδίαση διακεκομμένων γραμμών σύνδεσης πόλης - αεροδρομίου
     for i in range(len(cities_np)):
         air_id = assignments[i]
         plt.plot(
@@ -50,11 +61,10 @@ def plot_airport_system(cities, airports, title="Airport Location Optimization")
             alpha=0.4,
         )
 
-    if cities_np.shape[1] > 2:
-        scale_factor = populations / 300
-    else:
-        scale_factor = 100
+    # Δυναμική κλιμάκωση μεγέθους markers με βάση την ύπαρξη πληθυσμού
+    scale_factor = populations / 300 if cities_np.shape[1] > 2 else 100
 
+    # Σχεδίαση πόλεων (κύκλοι) και αεροδρομίων (κόκκινα X)
     plt.scatter(
         city_positions[:, 0],
         city_positions[:, 1],
@@ -76,6 +86,7 @@ def plot_airport_system(cities, airports, title="Airport Location Optimization")
         label="Airports",
     )
 
+    # Προσθήκη στατικών ετικετών (Labels) στις πόλεις και στα αεροδρόμια
     for i in range(len(cities_np)):
         plt.annotate(
             f"C{i}",
@@ -94,12 +105,19 @@ def plot_airport_system(cities, airports, title="Airport Location Optimization")
             fontweight="bold",
             color="black",
             bbox=dict(
-                boxstyle="round,pad=0.2", fc="white", ec="gray", lw=0.5, alpha=0.85
+                boxstyle="round,pad=0.2",
+                fc="white",
+                ec="gray",
+                lw=0.5,
+                alpha=0.85,
             ),
         )
 
+    # Μορφοποίηση αξόνων, τίτλου και πλέγματος
     plt.title(
-        f"{title}\nTotal Cost (C) = {total_cost:,.2f}", fontsize=14, fontweight="bold"
+        f"{title}\nTotal Cost (C) = {total_cost:,.2f}",
+        fontsize=14,
+        fontweight="bold",
     )
     plt.xlabel("X Coordinate")
     plt.ylabel("Y Coordinate")
@@ -108,6 +126,7 @@ def plot_airport_system(cities, airports, title="Airport Location Optimization")
     plt.xlim(-20, 520)
     plt.ylim(-20, 520)
 
+    # Φιλτράρισμα Legend για την αποφυγή διπλότυπων εγγραφών
     handles, labels = plt.gca().get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     plt.legend(by_label.values(), by_label.keys(), loc="upper right")
@@ -116,7 +135,7 @@ def plot_airport_system(cities, airports, title="Airport Location Optimization")
 
 def plot_interactive_dashboard(cities_data):
     """
-    ΔΙΑΔΡΑΣΤΙΚΟ ΓΡΑΦΗΜΑ: Live dashboard με Sliders, Κουμπιά και γεωμετρικά σύνορα.
+    ΔΙΑΔΡΑΣΤΙΚΟ ΓΡΑΦΗΜΑ: Live dashboard με Sliders, Κουμπιά και γεωμετρικά σύνορα για το Στάδιο D_Comparison.
     """
     from optimizers.genetic_lab_implementation import genetic_algorithm
     from optimizers.pso import pso_airport_optimization
@@ -125,12 +144,14 @@ def plot_interactive_dashboard(cities_data):
     city_positions = cities_np[:, :2]
     populations = cities_np[:, 2]
 
+    # Αρχικοποίηση GUI παραθύρου και προσαρμογή περιθωρίων για τα widgets
     fig, ax = plt.subplots(figsize=(11, 9))
     plt.subplots_adjust(bottom=0.28, left=0.25)
 
     def run_and_draw(n_airports, algorithm_name):
         ax.clear()
 
+        # Επιλογή και εκτέλεση του κατάλληλου μεταευρετικού αλγορίθμου
         if algorithm_name == "PSO":
             best_airports, best_cost, assignments, _ = pso_airport_optimization(
                 cities=cities_data, n_airports=n_airports, iterations=100
@@ -145,7 +166,8 @@ def plot_interactive_dashboard(cities_data):
             )
             best_airports = np.array(best_solution[0])
             distances = np.linalg.norm(
-                city_positions[:, None, :] - best_airports[None, :, :], axis=2
+                city_positions[:, None, :] - best_airports[None, :, :],
+                axis=2,
             )
             assignments = np.argmin(distances, axis=1)
             best_cost = np.sum(populations * np.min(distances, axis=1))
@@ -153,18 +175,11 @@ def plot_interactive_dashboard(cities_data):
         cmap = plt.colormaps["tab10"].resampled(n_airports)
         colors = cmap(assignments)
 
-        # --- ΠΡΟΣΘΗΚΗ: ΓΕΩΜΕΤΡΙΚΑ ΣΥΝΟΡΑ (VORONOI BACKGROUND LIVE) ---
-        grid_x = np.linspace(-20, 520, 200)
-        grid_y = np.linspace(-20, 520, 200)
-        X, Y = np.meshgrid(grid_x, grid_y)
-        grid_points = np.c_[X.ravel(), Y.ravel()]
-        dist_grid = np.linalg.norm(
-            grid_points[:, None, :] - best_airports[None, :, :], axis=2
-        )
-        Z = np.argmin(dist_grid, axis=1).reshape(X.shape)
+        # Δυναμικός επαναϋπολογισμός και σχεδίαση των Voronoi συνόρων στο φόντο
+        X, Y, Z = _compute_voronoi_grid(best_airports)
         ax.pcolormesh(X, Y, Z, cmap=cmap, alpha=0.12, shading="auto", zorder=0)
 
-        # Γραμμές σύνδεσης
+        # Σχεδίαση γραμμών σύνδεσης δικτύου
         for i in range(len(cities_np)):
             air_id = assignments[i]
             ax.plot(
@@ -176,6 +191,7 @@ def plot_interactive_dashboard(cities_data):
                 alpha=0.4,
             )
 
+        # Σχεδίαση οικιστικών κόμβων και κέντρων αεροδρομίων
         ax.scatter(
             city_positions[:, 0],
             city_positions[:, 1],
@@ -197,6 +213,7 @@ def plot_interactive_dashboard(cities_data):
             label="Airports",
         )
 
+        # Έξυπνη τοποθέτηση labels με adjustText για αποφυγή επικαλύψεων
         texts = []
         for i in range(len(cities_np)):
             t = ax.text(city_positions[i, 0], city_positions[i, 1], f"C{i}", fontsize=9)
@@ -209,14 +226,21 @@ def plot_interactive_dashboard(cities_data):
                 fontsize=11,
                 fontweight="bold",
                 bbox=dict(
-                    boxstyle="round,pad=0.15", fc="white", ec="gray", lw=0.5, alpha=0.7
+                    boxstyle="round,pad=0.15",
+                    fc="white",
+                    ec="gray",
+                    lw=0.5,
+                    alpha=0.7,
                 ),
             )
             texts.append(t)
         adjust_text(
-            texts, ax=ax, arrowprops=dict(arrowstyle="->", color="gray", lw=0.5)
+            texts,
+            ax=ax,
+            arrowprops=dict(arrowstyle="->", color="gray", lw=0.5),
         )
 
+        # Μορφοποίηση τίτλου και πλέγματος άξονα
         ax.set_title(
             f"Interactive Optimization ({algorithm_name})\nTotal Cost (C) = {best_cost:,.2f}",
             fontsize=13,
@@ -227,12 +251,13 @@ def plot_interactive_dashboard(cities_data):
         ax.set_ylim(-20, 520)
         ax.grid(True, linestyle=":", alpha=0.4)
 
+        # Ανανέωση Legend
         handles, labels = ax.get_legend_handles_labels()
         by_label = dict(zip(labels, handles))
         ax.legend(by_label.values(), by_label.keys(), loc="upper right")
         fig.canvas.draw_idle()
 
-    # Widgets Setup
+    # Τοποθέτηση και αρχικοποίηση των Matplotlib Widgets (Slider, Radio, Button)
     ax_slider = plt.axes([0.35, 0.15, 0.45, 0.03])
     slider_m = Slider(
         ax_slider, "Airports (m)", 1, 8, valinit=3, valstep=1, valfmt="%d"
@@ -244,15 +269,17 @@ def plot_interactive_dashboard(cities_data):
     ax_button = plt.axes([0.48, 0.05, 0.20, 0.05])
     button_run = Button(ax_button, "Optimize!", color="lightgreen", hovercolor="green")
 
+    # Event Handler: Διαχειρίζεται το κλικ του κουμπιού εκτέλεσης
     def on_optimize_clicked(event):
         button_run.label.set_text("Thinking...")
         fig.canvas.draw()
-        fig.canvas.flush_events()
+        fig.canvas.flush_events()  # Αναγκαστικό φλασάρισμα του GUI πριν κολλήσει ο αλγόριθμος
         run_and_draw(int(slider_m.val), radio_algo.value_selected)
         button_run.label.set_text("Optimize!")
         fig.canvas.draw_idle()
 
     button_run.on_clicked(on_optimize_clicked)
 
-    run_and_draw(3, "PSO")
+    # Αρχικό rendering κατά την πρώτη εκκίνηση του Dashboard
+    run_and_draw(6, "PSO")
     plt.show()
