@@ -50,39 +50,3 @@ print(f"Συνολικό άθροισμα αποστάσεων: {cost:.2f}")
 plot_airport_system(
     cities, [airport], title="Ερώτημα Α - Απλή χωροθέτηση ενός αεροδρομίου"
 )
-
-# -----------------------------
-# OLD ΓΡΑΦΗΜΑ
-# -----------------------------
-"""
-plt.figure(figsize=(8,6))
-
-plt.scatter(cities[:,0], cities[:,1], s=120, label="Πόλεις")
-
-for x, y in cities:
-    plt.text(x+3, y+3, f"({int(x)}, {int(y)})")
-
-plt.scatter(
-    airport[0],
-    airport[1],
-    marker="*",
-    s=300,
-    label=f"Αεροδρόμιο ({airport[0]:.2f}, {airport[1]:.2f})"
-)
-
-for city in cities:
-    plt.plot(
-        [airport[0], city[0]],
-        [airport[1], city[1]],
-        "--",
-        alpha=0.5
-    )
-
-plt.title("Ερώτημα Α - Απλή χωροθέτηση ενός αεροδρομίου")
-plt.xlabel("x")
-plt.ylabel("y")
-plt.grid(True)
-plt.legend()
-plt.axis("equal")
-plt.show()
-"""
